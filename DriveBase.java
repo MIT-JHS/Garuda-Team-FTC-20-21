@@ -45,60 +45,15 @@ public class DriveBase extends LinearOpMode {
         waitForStart();
         
         // Drive base
-        move(1.0,-1.0,1000);
-
+        move("Forward",4, "Very Fast");
         stopRobot();
         
-        motorDD.setPower(0.5);
-        sleep(2000);
-        
-        motorEE.setPower(-0.5);
-        sleep(2000);
-        
-        motorEE.setPower(-1);
-        sleep(2000);
+        buka_tutup_jari("Open", 1000);
+        buka_tutup_jari("Close", 1000);
 
-        motorEE.setPower(0);
-        motorDD.setPower(0);
-        
-        jari.setPosition(1);
-        sleep(5000);
-        jari.setPosition(0);
-        sleep(1000);
-        move(-1.0,1.0,1000);
+        move("Backward",1, "Very Fast");
         stopRobot();
         
-        
-        // // Berputar
-        // motorKanan.setPower(0.5);
-        // motorKiri.setPower (0.5);
-        // sleep(3000);
-        // motorKanan.setPower(0);
-        // motorKiri.setPower (0);
-        // sleep(500);
-        
-        // // Mundur
-        // motorKanan.setPower(0.5);
-        // motorKiri.setPower (-0.5);
-        // sleep(1000);
-        // motorKanan.setPower(0);
-        // motorKiri.setPower (0);
-        // sleep(500);
-        
-        // // Shooter
-        // motorEE.setPower(0.5);
-        // sleep(1000);
-        // motorEE.setPower (0);
-        // sleep(500);
-        
-        // // Menggerakan Jari
-        // servoJari.setPosition(0);
-        // sleep(1500);
-        // servoJari.setPosition(1);
-        // sleep(1500);
-        // servoJari.setPosition(0);
-        // sleep(500);
-
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) { 
@@ -110,15 +65,98 @@ public class DriveBase extends LinearOpMode {
         
     }
     
-    public void move(double motorKananPower, double motorKiriPower, int sleepValue) {
+    // 325 sleep 1 floor 
+    public int setFloor(int floorValues) {
+      int totalSleep = 0;
+              
+      for (int i = 1; i <= floorValues; i++) {
+        totalSleep += 310;
+      }
+      
+      return totalSleep;
+      
+    }
+    
+    public void manualMove(double motorKananPower,
+                     double motorKiriPower, 
+                     int floorValues) {
+
         motorKanan.setPower(motorKananPower);
         motorKiri.setPower (motorKiriPower);
+        int sleepValue = setFloor(floorValues);
         sleep(sleepValue);
     }
+
+    public void move(String statement,
+                          int floorValues, String motorPower) {
+      moveSwitch(statement, motorPower);
+      int sleepValue = setFloor(floorValues);
+      sleep(sleepValue);
+
+    }
+    
+    public void moveSwitch(String statement, String power) {
+      System.out.println(power);
+      
+      double motorPower = 
+        statement == "Backward" ? checkPower(power) * -1.0 :  checkPower(power);
+      
+      
+      switch (statement) {
+        case "Forward":
+          motorKanan.setPower(motorPower);
+          motorKiri.setPower(-motorPower);
+
+          break;
+        case "Backward":
+          motorKanan.setPower(motorPower);
+          motorKiri.setPower(motorPower * -1.0);
+        default:
+          System.out.println("ERR ON STATEMENT"); 
+          break;
+      }
+    }
+    
+    public double checkPower(String power) {
+      switch(power) {
+        case "Very Slow":
+          return 0.1;
+        case "Slow":
+          return 0.25;
+        case "Medium":
+          return 0.50;
+        case "Fast":
+          return 0.75;
+        case "Very Fast":
+          return 1.0;
+        default:
+          System.out.println("WRONG POWER!");
+          return 0.5;
+      }
+    }
+
+
     public void stopRobot() {
         motorKanan.setPower(0);
         motorKiri.setPower (0);
-        sleep(500);
+        sleep(100);
     }
+
+    public void buka_tutup_jari(String statement, int sleepValue) {
+      switch (statement) {
+        case "Open":
+          jari.setPosition(1); 
+          break;
+        case "Close":
+          jari.setPosition(0); 
+          break;
+        default: 
+          System.out.println("Error at the first parameter!");
+          break;
+      }
+
+      sleep(sleepValue);
+
+  }
+    
 }
-          
